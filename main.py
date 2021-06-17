@@ -1,12 +1,7 @@
 import requests
 import os
 from bs4 import BeautifulSoup
-
-
-def create_latest_news_log(log_txt, file_path):
-    f = open(file_path, 'w')
-    f.write(str(log_txt))
-    f.close()
+import datetime
 
 
 def read_text_file(file_path):
@@ -18,17 +13,27 @@ def read_text_file(file_path):
 def create_latest_news_message(b_soup):
     '''
     最新ニュースがあれば、メッセージを作成する処理
+
+    return:
+        もし、message内容に更新があれば、messageを返す。
+        一つもアップデートがなければ `None` をmessageに入れて返す。
     '''
     list_cards = b_soup.select("li[class='list-card']")
+    # 今日の日付取得
+    date_today = str(datetime.datetime.now().strftime('%Y-%m-%d'))
 
     message = "\n"
-    for idx, card in enumerate(list_cards):
-        if idx >= 1:
-            # 最初の１つ目のみ最新なのでmessage作成する
-            continue
+    update_news_counter = 0
+    for card in list_cards:
+        if card.select_one('p[class="update"]').text == date_today:
+            # 今日の日付にアップデートされたニュースだけmessageに追加する
+            message += f'##新着##\n  {str(card.p.text)}\n'
+            message += f'{card.a.get("href")}\n\n'
 
-        message += f'##新着##\n  {str(card.p.text)}\n'
-        message += f'{card.a.get("href")}\n\n'
+            update_news_counter += 1
+
+    if update_news_counter == 0:
+        message = None
 
     return message
 
@@ -49,25 +54,24 @@ if __name__ == "__main__":
     r_text = resp.text
     b_soup = BeautifulSoup(r_text, 'html.parser')
 
-    # 最後に取得したニュース
-    latest_news = read_text_file("db/log/check_logs/latest_news_log.txt")
-
-    # 通知用のメッセージ
+    # 通知用のメッセージ作成
+    # 新しいNewsがなければ None がmessageの中に入っている。
     message = create_latest_news_message(b_soup)
 
-    if message != latest_news:
+    if message != None:
+        message += "\n\nニュース一覧: https://www.levanga.com/news/"
         print("最新のニュースが更新されています。")
         print("############最新ニュース############")
         print(message)
-        create_latest_news_log(
-            message, "db/log/check_logs/latest_news_log.txt"
-        )
         
     else:
         print("最新ニュースは更新されていません。")
-        message = "本日は最新のニュースはありません。"
+        message = '本日は最新のニュースはありません。\nニュース一覧: https://www.levanga.com/news/'
     
     post_to_line(message, line_notify_token)
+
+
+
 
     # for i in range(1,12):
 
