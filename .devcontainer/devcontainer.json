@@ -19,7 +19,14 @@
 	"settings": {},
 
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [],
+	"extensions": [
+		"ms-python.python",
+		"tht13.python",
+		"coenraads.bracket-pair-colorizer",
+		"donjayamanne.githistory",
+		"eamodio.gitlens",
+		"yzhang.markdown-all-in-one"
+	],
 	"dockerComposeFile": [
 		"../docker-compose.yml",
 		"docker-compose.yml"
