@@ -6,8 +6,7 @@ services:
     restart: always
     container_name: 'hp_relaese_line_notification'
     working_dir: '/webapp'
-    # command: bash -C "pip install pipenv && pipenv lock -r > requirements.txt && pip install -r requirements.txt"
-    command: bash -C "pip install pipenv"
+    command: bash -C "pip install pipenv && pipenv lock -r > requirements.txt && pip install -r requirements.txt"
     tty: true
     volumes:
       - .:/webapp
