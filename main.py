@@ -60,10 +60,14 @@ if __name__ == "__main__":
         print("############最新ニュース############")
         print(message)
         create_latest_news_log(
-            message, "db/log/check_logs/latest_news_log.txt")
-        post_to_line(message, line_notify_token)
+            message, "db/log/check_logs/latest_news_log.txt"
+        )
+        
     else:
         print("最新ニュースは更新されていません。")
+        message = "本日は最新のニュースはありません。"
+    
+    post_to_line(message, line_notify_token)
 
     # for i in range(1,12):
 
